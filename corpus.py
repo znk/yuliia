@@ -6,7 +6,7 @@ from urllib.request import urljoin
 url = 'https://lyricstranslate.com/en/translations/15/328/none/none/none/0/0/0/0'
 
 records = []
-for page_index in range(0, 1):
+for page_index in range(0, 18):
     page = get(url, params={'page': page_index})
     doc = document(page.text, "html.parser")
 
@@ -23,9 +23,12 @@ for page_index in range(0, 1):
         if len(to_collect) != 2:
             continue
 
-        record.append(([to_collect[0].text, to_collect[1].text]))
+        record.append(
+            {'chinese': to_collect[0].text, 'english': to_collect[1].text})
     records.append(record)
 
-df = DataFrame(records, columns=["chinese", "english"])
+flat_records = [item for sublist in records for item in sublist]
+
+df = DataFrame(flat_records)
 df.to_html('data.html', index_names=False)
 df.to_csv('data.csv')
